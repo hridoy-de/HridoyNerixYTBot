@@ -1,16 +1,22 @@
-from flask import Flask
-import threading
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import logging
 import os
 
-app = Flask(__name__)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 
-@app.route("/")
-def home():
-    return "Bot is running"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-def run():
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Bot is running successfully ✅")
 
-threading.Thread(target=run).start()
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.run_polling()
+
 if __name__ == "__main__":
     main()
